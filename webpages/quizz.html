@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BirdSongQuizz</title>
+    <style>
+        body{background-color: #fefddf;}
+        /* Add CSS styles for the buttons */
+        .quiz-button {
+            display: inline-block;
+            padding: 10px 20px; /* Adjust the padding to change button size */
+            background-color: white;
+            color: black; /* Text color */
+            text-decoration: none; /* Remove underline */
+            border: 2px solid black; /* Add border */
+            border-radius: 10px; /* Add rounded corners */
+            margin: 1% 10px; /* Add margin between buttons */
+            min-width:45%;
+            text-align: center;
+            width:40%
+        }
+        .quiz-button:hover {
+            background-color: #eee; /* Change background color on hover */
+        }
+        .correct{
+            background-color:#9ad996;
+        }
+        .correct:hover{
+            background-color:#8ac986;
+        }
+        .wrong{
+            background-color:#f51945;
+        }
+        .wrong:hover{
+            background-color:#e50955;
+        }
+
+        .main{
+            max-width: 500px;
+            width:100%;
+            margin:auto;
+            text-align: center;
+        }
+        footer{margin:30px auto;max-width: 500px;text-align: center;}
+        .hidden{
+          max-height: 0px;
+          margin:0px;
+          padding:0px;
+          visibility: hidden;
+        }
+
+        /*Loading screen*/
+        .loader {
+          border: 16px solid #f3f3f3; /* Light grey */
+          border-top: 16px solid #3498db; /* Blue */
+          border-radius: 50%;
+          width: 120px;
+          height: 120px;
+          animation: spin 2s linear infinite;
+          margin:auto;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+  <section id="jswarning">
+    Sorry... to run this page, you need JavaScript enabled.
+  </section>
+  <section id="webpage" class="main hidden">
+    <h1>BirdSongQuizz</h1>
+    <div id="startQuizz">
+      <button id="StartGameButton" onclick="StartGame()" class="quiz-button">Start Game</button>
+    </div>
+    <div id="loading" class="hidden loader">
+    </div>
+    <div id="quizz" class="hidden">
+      <h2>Which bird is this?</h2>
+      <audio controls id="birdaudio">
+        <source id="audioSource" src="" type="audio/mpeg">
+        Your browser does not support the audio element...
+      </audio>
+      <p class="">
+        <a id="author" href=".." target="_blank">author</a>
+        <a id="attribution" href=".." target="_blank">
+          (CC)
+        </a>
+      </p>
+      <div>
+          <button id="option1" onclick="chooseOption(0)" class="quiz-button">Option 1</button>
+          <button id="option2" onclick="chooseOption(1)" class="quiz-button">Option 2</button>
+          <button id="option3" onclick="chooseOption(2)" class="quiz-button">Option 3</button>
+          <button id="option4" onclick="chooseOption(3)" class="quiz-button">Option 4</button>
+          <button id="Next" onclick="NewGame()" class="quiz-button hidden">Next</button>
+      </div>
+    </div>
+  </section>
+  <footer>
+    A big thanks to <a href="http://www.worldbirdnames.org/">IOC World Bird List</a> for the list of bird names and <a href="xeno-canto.org">Xeno-canto</a> for the bird recordings.
+    <br/><br/>
+    Made with &hearts; by Diego N.
+  </footer>
+</body>
+<script>
+  //Javascript Warning
+  document.getElementById("jswarning").classList.add('hidden');
+  document.getElementById("webpage").classList.remove('hidden');
+  // invert_dic function
+  const invert_dic = obj => Object.fromEntries(Object.entries(obj).map(a => a.reverse()))
+    // JavaScript function to redirect to a new page
+    function redirectToPage(pageName) {
+        window.location.href = pageName;
+    }
+
+  // JavaScript code to populate bird names from CSV
+  var lang="French"
+  var Regions_ids = ["PAL","AU"]
+  var Correctoption
+  function newquizz(){
+    return fetch('../BirdDatas/All_bird_'+lang+'.csv')//../BirdDatas/
+      .then(response => response.text())
+      .then(data => {
+        data = data.replaceAll("\r\n","\n")
+        heading = invert_dic(Object.assign({}, data.split('\n')[0].split(",")));
+        // Split the CSV data by line and add bird names to the array
+        birdNames = data.split('\n').filter(function(line){
+            if (line.includes(",")){
+              return Regions_ids.some(element => line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading["Breeding Range"]].includes(element));
+            }
+            else {return false;}
+          });
+        // Shuffle the bird names to randomize options
+        birdNames.sort(() => Math.random() - 0.5);
+
+        // Populate the buttons with bird names
+        for(var i=0; i < 4; i++){
+          if(i < birdNames.length){
+            document.getElementById("option"+(i+1)).classList.remove('hidden');
+            document.getElementById("option"+(i+1)).textContent = birdNames[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading[lang]];
+          }else{
+            document.getElementById("option"+(i+1)).classList.add('hidden');
+          }
+        }
+        // choose one of the birds
+        Correctoption = Math.floor(Math.random() * Math.min(4, birdNames.length));
+        console.log(Correctoption)
+        var Scientificname_correct = birdNames[Correctoption].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading["IOC"]];
+
+        // add the data of the sound
+        return Get_audio_json(Scientificname_correct).then((json_data) => {
+          document.getElementById('audioSource').src = json_data["file"];
+          document.getElementById('birdaudio').load();
+          document.getElementById("author").href = "https:"+json_data["url"];
+          document.getElementById("author").textContent = json_data["rec"];
+          document.getElementById("attribution").href = "https:"+json_data["lic"];
+          licencing = json_data["lic"].split("/");
+          document.getElementById("attribution").textContent = "(CC "+licencing[licencing.length-3].toUpperCase() +" "+ licencing[licencing.length-2]+")";
+        });
+      })
+      .catch(error => console.error('Error fetching CSV:', error));
+  }
+
+  //Function to set the right sound
+  function Get_audio_json(query, directory = "Temp", wich_sound = "random"){
+    console.log(query)
+    // Construct the URL for the Xeno-Canto API
+    const apiUrl = `https://xeno-canto.org/api/2/recordings?query=${query}`;
+
+    // Fetch data from the API
+    return fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to retrieve data from the Xeno-Canto API.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.numRecordings > 0) {
+                let sound_id;
+                if (wich_sound === "random") {
+                    sound_id = Math.floor(Math.random() * data.numRecordings);
+                } else if (Number.isInteger(wich_sound)) {
+                    sound_id = wich_sound;
+                } else if (wich_sound === "first") {
+                    sound_id = 0;
+                } else if (wich_sound === "last") {
+                    sound_id = data.numRecordings - 1;
+                } else {
+                    sound_id = 0;
+                }
+                json_data = data.recordings[sound_id];
+                return json_data;
+            }
+        })
+  }
+
+  //function to start the game
+  function StartGame(){
+    //Hide the main menu and show the quizz part
+    document.getElementById("startQuizz").classList.add('hidden')
+    loadedquizz = newquizz()
+    //loading screen until the quizz is over
+    document.getElementById("loading").classList.remove('hidden');
+    //play the audio and show the quiz
+    loadedquizz
+      .then(()=>{return document.getElementById("birdaudio").load();})
+      .then(()=>{
+        document.getElementById("loading").classList.add('hidden');
+        document.getElementById("quizz").classList.remove('hidden');
+        document.getElementById("birdaudio").play();
+      });
+    //
+  }
+
+  //function to choose an option
+  function chooseOption(option){
+    console.log(Correctoption)
+    console.log(option)
+    if (Correctoption == option){
+      document.getElementById("option"+(Correctoption+1)).classList.add('correct');
+    }else{
+      document.getElementById("option"+(Correctoption+1)).classList.add('correct');
+      document.getElementById("option"+(option+1)).classList.add('wrong');
+    }
+    document.getElementById("Next").classList.remove("hidden")
+  }
+  function NewGame(){
+    document.getElementById("Next").classList.add("hidden");
+    for(var i=0; i < 4; i++){
+      document.getElementById("option"+(i+1)).classList.remove('correct');
+      document.getElementById("option"+(i+1)).classList.remove('wrong');
+    }
+    document.getElementById("quizz").classList.add('hidden');
+    document.getElementById("birdaudio").pause()
+    StartGame();
+  }
+</script>
+</html>
