@@ -1,7 +1,7 @@
 # BirdSongQuizz
 Go to [the webpage](https://turtle6665.github.io/BirdSongQuizz/webpages/quizz.html) to see and play the simple game.
 
-##How does it work
+## How does it work
 Four birds names are choosen randomly from the [IOC database](http://www.worldbirdnames.org/). Then, one of them is choosed and a random audio is retrieved from [Xeno-canto](https://xeno-canto.org).
 
 ## Acnowledgment

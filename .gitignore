@@ -1,0 +1,4 @@
+*.xlsx
+__*
+Quizz.py
+get_sounds.py
