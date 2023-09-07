@@ -99,7 +99,7 @@
     </div>
   </section>
   <footer>
-    A big thanks to <a href="http://www.worldbirdnames.org/">IOC World Bird List</a> for the list of bird names and <a href="xeno-canto.org">Xeno-canto</a> for the bird recordings.
+    A big thanks to <a href="http://www.worldbirdnames.org/">IOC World Bird List</a> for the list of bird names and <a href="https://xeno-canto.org">Xeno-canto</a> for the bird recordings.
     <br/><br/>
     Made with &hearts; by Diego N.
   </footer>
@@ -116,7 +116,7 @@
     }
 
   // JavaScript code to populate bird names from CSV
-  var lang="French"
+  var lang="English"
   var Regions_ids = ["PAL","AU"]
   var Correctoption
   function newquizz(){
@@ -146,7 +146,7 @@
         }
         // choose one of the birds
         Correctoption = Math.floor(Math.random() * Math.min(4, birdNames.length));
-        console.log(Correctoption)
+        //console.log(Correctoption)
         var Scientificname_correct = birdNames[Correctoption].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading["IOC"]];
 
         // add the data of the sound
@@ -165,7 +165,7 @@
 
   //Function to set the right sound
   function Get_audio_json(query, directory = "Temp", wich_sound = "random"){
-    console.log(query)
+    //console.log(query)
     // Construct the URL for the Xeno-Canto API
     const apiUrl = `https://xeno-canto.org/api/2/recordings?query=${query}`;
 
@@ -217,8 +217,8 @@
 
   //function to choose an option
   function chooseOption(option){
-    console.log(Correctoption)
-    console.log(option)
+    //console.log(Correctoption)
+    //console.log(option)
     if (Correctoption == option){
       document.getElementById("option"+(Correctoption+1)).classList.add('correct');
     }else{
