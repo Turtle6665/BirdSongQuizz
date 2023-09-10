@@ -42,7 +42,7 @@ style.innerHTML = `
   box-shadow: gray 0 3px 8px;
   z-index: 100;
   padding:2px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: solid 1px #ced4da;
   display: none;
   margin: -1px;
