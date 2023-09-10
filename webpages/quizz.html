@@ -71,14 +71,83 @@
         }
 
     </style>
+    <script src="multiselect-dropdown.js" ></script>
 </head>
 <body>
-  <section id="jswarning">
+  <section id="jswarning" style="text-align: center;">
     Sorry... to run this page, you need JavaScript enabled.
   </section>
   <section id="webpage" class="main hidden">
     <h1>BirdSongQuizz</h1>
     <div id="startQuizz">
+      <label for="languages">Choose a language for the bird species names:</label>
+      <select id="selectLang" class="quiz-button">
+        <option value="Scientific">Scientific</option>
+        <option value="English">English</option>
+        <option value="Catalan">Catalan</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Chinese (Traditional)">Chinese (Traditional)</option>
+        <option value="Croatian">Croatian</option>
+        <option value="Czech">Czech</option>
+        <option value="Danish">Danish</option>
+        <option value="Dutch">Dutch</option>
+        <option value="Finnish">Finnish</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+        <option value="Italian">Italian</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Lithuanian">Lithuanian</option>
+        <option value="Norwegian">Norwegian</option>
+        <option value="Polish">Polish</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Russian">Russian</option>
+        <option value="Serbian">Serbian</option>
+        <option value="Slovak">Slovak</option>
+        <option value="Spanish">Spanish</option>
+        <option value="Swedish">Swedish</option>
+        <option value="Turkish">Turkish</option>
+        <option value="Ukrainian">Ukrainian</option>
+        <option value="Afrikaans">Afrikaans</option>
+        <option value="Arabic">Arabic</option>
+        <option value="Belarusian">Belarusian</option>
+        <option value="Bulgarian">Bulgarian</option>
+        <option value="Estonian">Estonian</option>
+        <option value="Greek">Greek</option>
+        <option value="Hebrew">Hebrew</option>
+        <option value="Hungarian">Hungarian</option>
+        <option value="Icelandic">Icelandic</option>
+        <option value="Indonesian">Indonesian</option>
+        <option value="Korean">Korean</option>
+        <option value="Latvian">Latvian</option>
+        <option value="Macedonian">Macedonian</option>
+        <option value="Malayalam">Malayalam</option>
+        <option value="Northern Sami">Northern Sami</option>
+        <option value="Persian">Persian</option>
+        <option value="Romanian">Romanian</option>
+        <option value="Slovenian">Slovenian</option>
+        <option value="Thai">Thai</option>
+      </select></br>
+
+      <label for="Regions">Choose the region you want the bird form:</label>
+      <select name="selectRegion" id="selectRegion" class="quiz-button" multiple multiselect-search="true" multiselect-select-all="true">
+        <option value="NA">North America</option>
+        <option value="MA">Middle America</option>
+        <option value="SA">South America</option>
+        <option value="LA">Latin America</option>
+        <option value="AF">Africa</option>
+        <option value="PAL">Eurasia</option>
+        <option value="OR">Oriental Region</option>
+        <option value="AU">Australasia</option>
+        <option value="AO">Atlantic Ocean</option>
+        <option value="PO">Pacific Ocean</option>
+        <option value="IO">Indian Ocean</option>
+        <option value="TrO">Tropical Ocean</option>
+        <option value="TO">Temperate Ocean</option>
+        <option value="NO">Northern Ocean</option>
+        <option value="SO">Southern Ocean</option>
+        <option value="AN">Antarctica</option>
+      </select></br></br>
+      <p id="message"></p>
       <button id="StartGameButton" onclick="StartGame()" class="quiz-button">Start Game</button>
     </div>
     <div id="loading" class="hidden loader">
@@ -105,7 +174,7 @@
     </div>
   </section>
   <footer>
-    A big thanks to <a href="http://www.worldbirdnames.org/">IOC World Bird List</a> for the list of bird names and <a href="https://xeno-canto.org">Xeno-canto</a> for the bird recordings.
+    A big thanks to <a href="http://www.worldbirdnames.org/">IOC World Bird List</a> for the list of bird names and <a href="https://xeno-canto.org">xeno-canto</a> for the bird recordings.
     <br/><br/>
     Made with &hearts; by Diego N.
   </footer>
@@ -114,6 +183,7 @@
   //Javascript Warning
   document.getElementById("jswarning").classList.add('hidden');
   document.getElementById("webpage").classList.remove('hidden');
+  gohome();
   // invert_dic function
   const invert_dic = obj => Object.fromEntries(Object.entries(obj).map(a => a.reverse()))
     // JavaScript function to redirect to a new page
@@ -125,7 +195,7 @@
   var lang="English"
   var Regions_ids = ['NA', 'MA', 'SA', 'LA', 'AF', 'PAL', 'OR', 'AU', 'AO', 'PO', 'IO', 'TrO', 'TO', 'NO', 'SO', 'AN']
   var Correctoption
-  function newquizz(){
+  function newquizz(trynumber=0){
     return fetch('../BirdDatas/All_bird_'+lang+'.csv')//../BirdDatas/
       .then(response => response.text())
       .then(data => {
@@ -138,37 +208,50 @@
             }
             else {return false;}
           });
-        // Shuffle the bird names to randomize options
-        birdNames.sort(() => Math.random() - 0.5);
+        if(birdNames.length ==0){
+          //once the game is showned, go back to home screen
+          var timer = setInterval(function() {
+             if (document.getElementById("quizz").className.includes('hidden')) {
+             }else {
+               //run some other function
+               gohome("No bird found within the selected region(s)...");
+               clearInterval(timer);
+             }
+          }, 200);
+        }else{
+          // Shuffle the bird names to randomize options
+          birdNames.sort(() => Math.random() - 0.5);
 
-        // Populate the buttons with bird names
-        for(var i=0; i < 4; i++){
-          if(i < birdNames.length){
-            document.getElementById("option"+(i+1)).classList.remove('hidden');
-            document.getElementById("option"+(i+1)).textContent = birdNames[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading[lang]];
-          }else{
-            document.getElementById("option"+(i+1)).classList.add('hidden');
+          // Populate the buttons with bird names
+          for(var i=0; i < 4; i++){
+            if(i < birdNames.length){
+              document.getElementById("option"+(i+1)).classList.remove('hidden');
+              document.getElementById("option"+(i+1)).textContent = birdNames[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading[lang]];
+            }else{
+              document.getElementById("option"+(i+1)).classList.add('hidden');
+            }
           }
-        }
-        // choose one of the birds
-        Correctoption = Math.floor(Math.random() * Math.min(4, birdNames.length));
-        //console.log(Correctoption)
-        var Scientificname_correct = birdNames[Correctoption].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading["IOC"]];
+          // choose one of the birds
+          Correctoption = Math.floor(Math.random() * Math.min(4, birdNames.length));
+          //console.log(Correctoption)
+          var Scientificname_correct = birdNames[Correctoption].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)[heading["IOC"]];
 
-        // add the data of the sound
-        return Get_audio_json(Scientificname_correct).then((json_data) => {
-          document.getElementById('audioSource').src = json_data["file"];
-          document.getElementById('birdaudio').load();
-          document.getElementById("author").href = "https:"+json_data["url"];
-          document.getElementById("author").textContent = json_data["rec"];
-          document.getElementById("attribution").href = "https:"+json_data["lic"];
-          licencing = json_data["lic"].split("/");
-          document.getElementById("attribution").textContent = "(CC "+licencing[licencing.length-3].toUpperCase() +" "+ licencing[licencing.length-2]+")";
-        });
+          // add the data of the sound
+          return Get_audio_json(Scientificname_correct).then((json_data) => {
+            document.getElementById('audioSource').src = json_data["file"];
+            document.getElementById('birdaudio').load();
+            document.getElementById("author").href = "https:"+json_data["url"];
+            document.getElementById("author").textContent = json_data["rec"];
+            document.getElementById("attribution").href = "https:"+json_data["lic"];
+            licencing = json_data["lic"].split("/");
+            document.getElementById("attribution").textContent = "(CC "+licencing[licencing.length-3].toUpperCase() +" "+ licencing[licencing.length-2]+")";
+          });
+        };
       })
       .catch((error) => {
         console.error('Error fetching CSV:', error);
-        NewGame();
+        trynumber +=1
+        NewGame(trynumber);
       });
   }
 
@@ -207,7 +290,14 @@
   }
 
   //function to start the game
-  function StartGame(){
+  function StartGame(trynumber=0){
+    //get the choosen options
+    lang = document.getElementById("selectLang").value;
+    Regions_ids = []
+    var regionsCol = document.getElementById("selectRegion").selectedOptions
+    for(let i = 0; i <regionsCol.length; i++){
+      Regions_ids.push(regionsCol[i].value)
+    }
     //Hide the main menu and show the quizz part
     document.getElementById("startQuizz").classList.add('hidden')
     loadedquizz = newquizz()
@@ -236,7 +326,9 @@
     }
     document.getElementById("Next").classList.remove("hidden")
   }
-  function NewGame(){
+
+  //function to have an other quizz just after the next one
+  function NewGame(trynumber=0){
     document.getElementById("Next").classList.add("hidden");
     for(var i=0; i < 4; i++){
       document.getElementById("option"+(i+1)).classList.remove('correct');
@@ -244,7 +336,24 @@
     }
     document.getElementById("quizz").classList.add('hidden');
     document.getElementById("birdaudio").pause()
-    StartGame();
+    StartGame(trynumber);
+  }
+
+  //function to go back to home screen
+  function gohome(message=""){
+    // change back to the statquizz menu and hides the rest
+    document.getElementById("startQuizz").classList.remove('hidden');
+    document.getElementById("loading").classList.add('hidden');
+    document.getElementById("quizz").classList.add('hidden');
+    document.getElementById("birdaudio").pause();
+
+    if(message != ""){
+      document.getElementById("message").classList.remove("hidden")
+      document.getElementById("message").textContent = message
+    }
+    else{
+      document.getElementById("message").classList.add("hidden")
+    }
   }
 </script>
 </html>
