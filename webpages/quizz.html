@@ -19,6 +19,13 @@
             text-align: center;
             width:40%
         }
+        select{
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right .75rem center;
+          background-size: 16px 12px;
+        }
         @media only screen and (max-width: 500px) {
           .quiz-button {
             min-width:95%;
@@ -52,6 +59,7 @@
           margin:0px;
           padding:0px;
           visibility: hidden;
+          display: none;
         }
 
         /*Loading screen*/
@@ -69,7 +77,7 @@
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-
+        h2{margin-top: 0px;}
     </style>
     <script src="multiselect-dropdown.js" ></script>
 </head>
@@ -80,7 +88,7 @@
   <section id="webpage" class="main hidden">
     <h1>BirdSongQuizz</h1>
     <div id="startQuizz">
-      <label for="languages">Choose a language for the bird species names:</label>
+      <label for="languages">Choose a language for the bird species names:</br></label>
       <select id="selectLang" class="quiz-button">
         <option value="Scientific">Scientific</option>
         <option value="English">English</option>
@@ -128,7 +136,7 @@
         <option value="Thai">Thai</option>
       </select></br>
 
-      <label for="Regions">Choose the region you want the bird form:</label>
+      <label for="Regions">Choose the breeding area(s) of the birds you want to identify:</br></label>
       <select name="selectRegion" id="selectRegion" class="quiz-button" multiple multiselect-search="true" multiselect-select-all="true">
         <option value="NA">North America</option>
         <option value="MA">Middle America</option>

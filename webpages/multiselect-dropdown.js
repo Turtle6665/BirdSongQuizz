@@ -3,7 +3,7 @@ style.setAttribute("id","multiselect_dropdown_styles");
 style.innerHTML = `
 .multiselect-dropdown{
   display: inline-block;
-  padding: 5px 5px;
+  padding: 10px 2px;
   margin: auto 10px;
   border-radius: 10px;
   border: 2px solid black;
@@ -109,6 +109,7 @@ function MultiselectDropdown(options){
         });
        }
       else if(k==='text'){attrs[k]===''?e.innerHTML='&nbsp;':e.innerText=attrs[k]}
+      else if(k==="tabindex"){e.tabIndex = attrs[k];}
       else e[k]=attrs[k];
     });
     return e;
@@ -117,12 +118,12 @@ function MultiselectDropdown(options){
 
   document.querySelectorAll("select[multiple]").forEach((el,k)=>{
 
-    var div=newEl('div',{class:'multiselect-dropdown',style:{width:config.style?.width??el.clientWidth+'px',padding:config.style?.padding??''}});
+    var div=newEl('div',{class:'multiselect-dropdown',tabindex:"0",style:{width:config.style?.width??el.clientWidth+'px',padding:config.style?.padding??''}});
     el.style.display='none';
     el.parentNode.insertBefore(div,el.nextSibling);
     var listWrap=newEl('div',{class:'multiselect-dropdown-list-wrapper'});
     var list=newEl('div',{class:'multiselect-dropdown-list',style:{height:config.height}});
-    var search=newEl('input',{class:['multiselect-dropdown-search'].concat([config.searchInput?.class??'form-control']),style:{width:'100%',display:el.attributes['multiselect-search']?.value==='true'?'block':'none'},placeholder:config.txtSearch});
+    var search=newEl('input',{class:['multiselect-dropdown-search'].concat([config.searchInput?.class??'form-control']),tabindex:"0",style:{width:'100%',display:el.attributes['multiselect-search']?.value==='true'?'block':'none'},placeholder:config.txtSearch});
     listWrap.appendChild(search);
     div.appendChild(listWrap);
     listWrap.appendChild(list);
