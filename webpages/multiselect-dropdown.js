@@ -13,7 +13,7 @@ style.innerHTML = `
   background-repeat: no-repeat;
   background-position: right .75rem center;
   background-size: 16px 12px;
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 .multiselect-dropdown span.optext, .multiselect-dropdown span.placeholder{
   margin-right:0.5em;
@@ -118,7 +118,7 @@ function MultiselectDropdown(options){
 
   document.querySelectorAll("select[multiple]").forEach((el,k)=>{
 
-    var div=newEl('div',{class:'multiselect-dropdown',tabindex:"0",style:{width:config.style?.width??el.clientWidth+'px',padding:config.style?.padding??''}});
+    var div=newEl('div',{class:['multiselect-dropdown'].concat(el.classList),tabindex:"0"});//,style:{width:config.style?.width??el.clientWidth+'px',padding:config.style?.padding??''}
     el.style.display='none';
     el.parentNode.insertBefore(div,el.nextSibling);
     var listWrap=newEl('div',{class:'multiselect-dropdown-list-wrapper'});
